@@ -22,7 +22,7 @@ class FacenetDataset(data.Dataset):
         return np.random.rand()*(b-a) + a
 
     def __getitem__(self, index):
-        annotation_path = self.lines[index].split(';')[1].split()[0]
+        annotation_path = self.lines[index].split(';')[1].strip()
         y               = int(self.lines[index].split(';')[0])
 
         image = cvtColor(Image.open(annotation_path))
@@ -48,18 +48,18 @@ def dataset_collate(batch):
 
 class LFWDataset(datasets.ImageFolder):
     def __init__(self, dir, pairs_path, image_size, transform=None):
-        super(LFWDataset, self).__init__(dir,transform)
+        super(LFWDataset, self).__init__(dir, transform)
         self.image_size = image_size
         self.pairs_path = pairs_path
         self.validation_images = self.get_lfw_paths(dir)
 
-    def read_lfw_pairs(self,pairs_filename):
+    def read_lfw_pairs(self, pairs_filename):
         pairs = []
         with open(pairs_filename, 'r') as f:
-            for line in f.readlines()[1:]:
+            for line in f.readlines()[0:]:
                 pair = line.strip().split()
                 pairs.append(pair)
-        return np.array(pairs)
+        return np.array(pairs, dtype=object)
 
     def get_lfw_paths(self,lfw_dir,file_ext="jpg"):
 
@@ -73,12 +73,12 @@ class LFWDataset(datasets.ImageFolder):
         #for pair in pairs:
             pair = pairs[i]
             if len(pair) == 3:
-                path0 = os.path.join(lfw_dir, pair[0], pair[0] + '_' + '%04d' % int(pair[1])+'.'+file_ext)
-                path1 = os.path.join(lfw_dir, pair[0], pair[0] + '_' + '%04d' % int(pair[2])+'.'+file_ext)
+                path0 = os.path.join(lfw_dir, pair[0], pair[1])
+                path1 = os.path.join(lfw_dir, pair[0], pair[2])
                 issame = True
             elif len(pair) == 4:
-                path0 = os.path.join(lfw_dir, pair[0], pair[0] + '_' + '%04d' % int(pair[1])+'.'+file_ext)
-                path1 = os.path.join(lfw_dir, pair[2], pair[2] + '_' + '%04d' % int(pair[3])+'.'+file_ext)
+                path0 = os.path.join(lfw_dir, pair[0], pair[1])
+                path1 = os.path.join(lfw_dir, pair[2], pair[3])
                 issame = False
             if os.path.exists(path0) and os.path.exists(path1):    # Only add the pair if both paths exist
                 path_list.append((path0,path1,issame))

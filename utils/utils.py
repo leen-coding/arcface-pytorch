@@ -23,7 +23,6 @@ def resize_image(image, size, letterbox_image):
         scale   = min(w/iw, h/ih)
         nw      = int(iw*scale)
         nh      = int(ih*scale)
-
         image   = image.resize((nw,nh), Image.BICUBIC)
         new_image = Image.new('RGB', size, (128,128,128))
         new_image.paste(image, ((w-nw)//2, (h-nh)//2))
@@ -63,3 +62,7 @@ def show_config(**kwargs):
     for key, value in kwargs.items():
         print('|%25s | %40s|' % (str(key), str(value)))
     print('-' * 70)
+
+if __name__ == "__main__":
+    image =  Image.new('RGB', (1024, 1024))
+    resize_image(image, (112, 112), True)

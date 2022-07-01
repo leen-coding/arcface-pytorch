@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Module, Parameter
+from nets.ConvNext.model import convnext_tiny
 
 from nets.iresnet import (iresnet18, iresnet34, iresnet50, iresnet100,
                           iresnet200)
@@ -42,6 +43,11 @@ class Arcface(nn.Module):
             embedding_size  = 128
             s               = 32
             self.arcface    = get_mbf(embedding_size=embedding_size, pretrained=pretrained)
+
+        elif backbone == "convNext":
+            embedding_size = 512
+            s = 64
+            self.arcface = convnext_tiny(embedding_size=embedding_size)
 
         elif backbone=="mobilenetv1":
             embedding_size  = 512

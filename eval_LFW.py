@@ -35,12 +35,12 @@ if __name__ == "__main__":
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
     #--------------------------------------#
-    lfw_dir_path    = "lfw"
-    lfw_pairs_path  = "model_data/lfw_pair.txt"
+    lfw_dir_path    = "ROF/masked"
+    lfw_pairs_path  = "ROF/mask_pairs.txt"
     #--------------------------------------#
     #   评估的批次大小和记录间隔
     #--------------------------------------#
-    batch_size      = 256
+    batch_size      = 64
     log_interval    = 1
     #--------------------------------------#
     #   ROC图的保存路径
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     png_save_path   = "model_data/roc_test.png"
 
     test_loader = torch.utils.data.DataLoader(
-        LFWDataset(dir=lfw_dir_path, pairs_path=lfw_pairs_path, image_size=input_shape), batch_size=batch_size, shuffle=False)
+        LFWDataset(dir=lfw_dir_path, pairs_path=lfw_pairs_path, image_size=input_shape), batch_size=batch_size, shuffle=False, drop_last=False)
 
     model = Arcface(backbone=backbone, mode="predict")
 
