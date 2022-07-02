@@ -212,3 +212,4 @@ def convnext_xlarge(num_classes: int):
     return model
 
 if __name__ == "__main__":
+    pass
