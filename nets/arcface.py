@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Module, Parameter
-from nets.ConvNext.model import convnext_tiny
+from nets.ConvNext.convNext import convnext_tiny
 
 from nets.iresnet import (iresnet18, iresnet34, iresnet50, iresnet100,
                           iresnet200)

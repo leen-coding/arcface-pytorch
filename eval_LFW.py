@@ -2,7 +2,7 @@ import torch
 import torch.backends.cudnn as cudnn
 
 from nets.arcface import Arcface
-from utils.dataloader import LFWDataset
+from utils.dataloader import TestDataset
 from utils.utils_metrics import test
 
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     png_save_path   = "model_data/roc_test.png"
 
     test_loader = torch.utils.data.DataLoader(
-        LFWDataset(dir=lfw_dir_path, pairs_path=lfw_pairs_path, image_size=input_shape), batch_size=batch_size, shuffle=False, drop_last=False)
+        TestDataset(dir=lfw_dir_path, pairs_path=lfw_pairs_path, image_size=input_shape), batch_size=batch_size, shuffle=False, drop_last=False)
 
     model = Arcface(backbone=backbone, mode="predict")
 

@@ -63,6 +63,8 @@ def show_config(**kwargs):
         print('|%25s | %40s|' % (str(key), str(value)))
     print('-' * 70)
 
+
+
 if __name__ == "__main__":
     image =  Image.new('RGB', (1024, 1024))
     resize_image(image, (112, 112), True)

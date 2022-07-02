@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from nets.arcface import Arcface
 from nets.arcface_training import get_lr_scheduler, set_optimizer_lr
 from utils.callback import LossHistory
-from utils.dataloader import FacenetDataset, LFWDataset, dataset_collate
+from utils.dataloader import TrainDataset, TestDataset, ValDataset, dataset_collate
 from utils.utils import get_num_classes, show_config
 from utils.utils_fit import fit_one_epoch
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     #   如果使用mobilenetv1为主干,  则设置pretrain = True
     #   如果使用其它网络为主干，    则设置pretrain = False
     #--------------------------------------------------------#
-    backbone        = "convNext"
+    backbone        = "mobilefacenet"
     #----------------------------------------------------------------------------------------------------------------------------#
     #   如果训练过程中存在中断训练的操作，可以将model_path设置成logs文件夹下的权值文件，将已经训练了一部分的权值再次载入。
     #   同时修改下方的训练的参数，来保证模型epoch的连续性。
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     #   如果想要让模型从主干的预训练权值开始训练，则设置model_path = ''，pretrain = True，此时仅加载主干。
     #   如果想要让模型从0开始训练，则设置model_path = ''，pretrain = Fasle，此时从0开始训练。
     #----------------------------------------------------------------------------------------------------------------------------#  
-    model_path      = ""
+    model_path      = "model_data/arcface_mobilefacenet.pth"
     #----------------------------------------------------------------------------------------------------------------------------#
     #   是否使用主干网络的预训练权重，此处使用的是主干的权重，因此是在模型构建的时候进行加载的。
     #   如果设置了model_path，则主干的权值无需加载，pretrained的值无意义。
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     #   batch_size      每次输入的图片数量
     #------------------------------------------------------#
     Init_Epoch      = 0
-    Epoch           = 50
+    Epoch           = 1
     batch_size      = 64
 
     #------------------------------------------------------------------#
@@ -253,13 +253,13 @@ if __name__ == "__main__":
     #---------------------------------#
     #   LFW估计
     #---------------------------------#
-    LFW_loader = torch.utils.data.DataLoader(
-        LFWDataset(dir=lfw_dir_path, pairs_path=lfw_pairs_path, image_size=input_shape), batch_size=32, shuffle=False) if lfw_eval_flag else None
+    Test_loader = torch.utils.data.DataLoader(
+        TestDataset(dir=lfw_dir_path, pairs_path=lfw_pairs_path, image_size=input_shape), batch_size=32, shuffle=False) if lfw_eval_flag else None
 
     #-------------------------------------------------------#
     #   0.01用于验证，0.99用于训练
     #-------------------------------------------------------#
-    val_split = 0.01
+    val_split = 0.8
     with open(annotation_path,"r") as f:
         lines = f.readlines()
     np.random.seed(10101)
@@ -310,12 +310,13 @@ if __name__ == "__main__":
         #---------------------------------------#
         #   构建数据集加载器。
         #---------------------------------------#
-        train_dataset   = FacenetDataset(input_shape, lines[:num_train], random = True)
-        val_dataset     = FacenetDataset(input_shape, lines[num_train:], random = False)
+        train_dataset   = TrainDataset(input_shape, lines[:num_train], random = True)
+        val_dataset_loss = TrainDataset(input_shape, lines[num_train:], random = True)
+        val_dataset_acc     = ValDataset(input_shape, lines[num_train:], random = False)
         
         if distributed:
             train_sampler   = torch.utils.data.distributed.DistributedSampler(train_dataset, shuffle=True,)
-            val_sampler     = torch.utils.data.distributed.DistributedSampler(val_dataset, shuffle=False,)
+            val_sampler     = torch.utils.data.distributed.DistributedSampler(val_dataset_loss, shuffle=False,)
             batch_size      = batch_size // ngpus_per_node
             shuffle         = False
         else:
@@ -325,8 +326,10 @@ if __name__ == "__main__":
 
         gen             = DataLoader(train_dataset, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers, pin_memory=True,
                                 drop_last=True, collate_fn=dataset_collate, sampler=train_sampler)
-        gen_val         = DataLoader(val_dataset, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers, pin_memory=True,
+        gen_val_loss         = DataLoader(val_dataset_loss, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers, pin_memory=True,
                                 drop_last=True, collate_fn=dataset_collate, sampler=val_sampler)
+        gen_val_acc = DataLoader(val_dataset_acc, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers, pin_memory=True,
+                                drop_last=True, sampler=val_sampler)
 
         for epoch in range(Init_Epoch, Epoch):
             if distributed:
@@ -334,7 +337,7 @@ if __name__ == "__main__":
                 
             set_optimizer_lr(optimizer, lr_scheduler_func, epoch)
             
-            fit_one_epoch(model_train, model, loss_history, optimizer, epoch, epoch_step, epoch_step_val, gen, gen_val, Epoch, Cuda, LFW_loader, lfw_eval_flag, fp16, scaler, save_period, save_dir, local_rank)
+            fit_one_epoch(model_train, model, loss_history, optimizer, epoch, epoch_step, epoch_step_val, gen, gen_val_loss, gen_val_acc, Epoch, Cuda, Test_loader, lfw_eval_flag, fp16, scaler, save_period, save_dir, local_rank)
 
         if local_rank == 0:
             loss_history.writer.close()
