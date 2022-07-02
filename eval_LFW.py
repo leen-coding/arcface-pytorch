@@ -22,7 +22,7 @@ if __name__ == "__main__":
     #   iresnet100
     #   iresnet200
     #--------------------------------------#
-    backbone        = "mobilefacenet"
+    backbone        = "convNext"
     #--------------------------------------#
     #   输入图像大小
     #--------------------------------------#
@@ -30,13 +30,13 @@ if __name__ == "__main__":
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = "model_data/arcface_mobilefacenet.pth"
+    model_path      = "model_data/ep001-loss32.042-val_loss23.146.pth"
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
     #--------------------------------------#
-    lfw_dir_path    = "ROF/masked"
-    lfw_pairs_path  = "ROF/mask_pairs.txt"
+    lfw_dir_path    = "lfw"
+    lfw_pairs_path  = "model_data/lfw_pairs_test.txt"
     #--------------------------------------#
     #   评估的批次大小和记录间隔
     #--------------------------------------#

@@ -75,7 +75,7 @@ if __name__ == "__main__":
     #   如果想要让模型从主干的预训练权值开始训练，则设置model_path = ''，pretrain = True，此时仅加载主干。
     #   如果想要让模型从0开始训练，则设置model_path = ''，pretrain = Fasle，此时从0开始训练。
     #----------------------------------------------------------------------------------------------------------------------------#  
-    model_path      = "model_data/arcface_mobilefacenet.pth"
+    model_path      = ""
     #----------------------------------------------------------------------------------------------------------------------------#
     #   是否使用主干网络的预训练权重，此处使用的是主干的权重，因此是在模型构建的时候进行加载的。
     #   如果设置了model_path，则主干的权值无需加载，pretrained的值无意义。
@@ -152,12 +152,12 @@ if __name__ == "__main__":
     #------------------------------------------------------------------#
     #   是否开启LFW评估
     #------------------------------------------------------------------#
-    lfw_eval_flag   = False
+    lfw_eval_flag   = True
     #------------------------------------------------------------------#
     #   LFW评估数据集的文件路径和对应的txt文件
     #------------------------------------------------------------------#
-    lfw_dir_path    = "lfw"
-    lfw_pairs_path  = "model_data/lfw_pair.txt"
+    lfw_dir_path    = "ROF/sunglasses"
+    lfw_pairs_path  = "ROF/glasses_pairs.txt"
 
     #------------------------------------------------------#
     #   设置用到的显卡
@@ -312,7 +312,7 @@ if __name__ == "__main__":
         #---------------------------------------#
         train_dataset   = TrainDataset(input_shape, lines[:num_train], random = True)
         val_dataset_loss = TrainDataset(input_shape, lines[num_train:], random = True)
-        val_dataset_acc     = ValDataset(input_shape, lines[num_train:], random = False)
+        # val_dataset_acc     = ValDataset(input_shape, lines[num_train:], random = True)
         
         if distributed:
             train_sampler   = torch.utils.data.distributed.DistributedSampler(train_dataset, shuffle=True,)
@@ -328,8 +328,8 @@ if __name__ == "__main__":
                                 drop_last=True, collate_fn=dataset_collate, sampler=train_sampler)
         gen_val_loss         = DataLoader(val_dataset_loss, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers, pin_memory=True,
                                 drop_last=True, collate_fn=dataset_collate, sampler=val_sampler)
-        gen_val_acc = DataLoader(val_dataset_acc, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers, pin_memory=True,
-                                drop_last=True, sampler=val_sampler)
+        # gen_val_acc = DataLoader(val_dataset_acc, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers, pin_memory=True,
+        #                         drop_last=True, sampler=val_sampler)
 
         for epoch in range(Init_Epoch, Epoch):
             if distributed:
@@ -337,7 +337,7 @@ if __name__ == "__main__":
                 
             set_optimizer_lr(optimizer, lr_scheduler_func, epoch)
             
-            fit_one_epoch(model_train, model, loss_history, optimizer, epoch, epoch_step, epoch_step_val, gen, gen_val_loss, gen_val_acc, Epoch, Cuda, Test_loader, lfw_eval_flag, fp16, scaler, save_period, save_dir, local_rank)
+            fit_one_epoch(model_train, model, loss_history, optimizer, epoch, epoch_step, epoch_step_val, gen, gen_val_loss, Epoch, Cuda, Test_loader, lfw_eval_flag, fp16, scaler, save_period, save_dir, local_rank)
 
         if local_rank == 0:
             loss_history.writer.close()
