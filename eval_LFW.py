@@ -30,7 +30,7 @@ if __name__ == "__main__":
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = "model_data/ep001-loss32.042-val_loss23.146.pth"
+    model_path      = "D:\\Files\\arcface-pytorch\\result\\conv-webocc-lfw\ep036-loss18.593-val_loss18.595.pth"
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件

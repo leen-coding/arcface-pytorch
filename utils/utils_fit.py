@@ -144,7 +144,7 @@ def fit_one_epoch(model_train, model, loss_history, optimizer, epoch, epoch_step
             print('Start Test')
 
         labels, distances = [], []
-        pbar = tqdm(enumerate(test_loader))
+        pbar = tqdm(enumerate(test_loader),total=epoch_step_val, desc=f'Epoch {epoch + 1}/{Epoch}')
         for batch_idx, (data_a, data_p, label) in pbar:
             with torch.no_grad():
                 data_a, data_p = data_a.type(torch.FloatTensor), data_p.type(torch.FloatTensor)

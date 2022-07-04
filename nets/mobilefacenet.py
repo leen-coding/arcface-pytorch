@@ -1,6 +1,6 @@
 from torch import nn
 from torch.nn import BatchNorm2d, Conv2d, Module, PReLU, Sequential
-
+import torch
 class Flatten(Module):
     def forward(self, input):
         return input.view(input.size(0), -1)
@@ -129,3 +129,11 @@ def get_mbf(embedding_size, pretrained):
     if pretrained:
         raise ValueError("No pretrained model for mobilefacenet")
     return MobileFaceNet(embedding_size)
+
+
+if __name__ == "__main__":
+    model = MobileFaceNet(embedding_size=1000)
+
+    x = torch.zeros([2,3,112,112])
+    out = model(x)
+    print("test")

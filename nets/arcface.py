@@ -1,5 +1,5 @@
 import math
-
+from nets.ConvNext.convNext-cbam import convnext_tiny_cbam
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -48,6 +48,11 @@ class Arcface(nn.Module):
             embedding_size = 512
             s = 64
             self.arcface = convnext_tiny(embedding_size=embedding_size)
+
+        elif backbone == "convNext-cbam":
+            embedding_size = 512
+            s = 64
+            self.arcface = convnext_tiny_cbam(embedding_size=embedding_size)
 
         elif backbone=="mobilenetv1":
             embedding_size  = 512
