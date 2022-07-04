@@ -247,10 +247,3 @@ def convnext_xlarge(num_classes: int):
                      dims=[256, 512, 1024, 2048],
                      num_classes=num_classes)
     return model
-
-if __name__ == "__main__":
-    model = convnext_tiny(embedding_size=256)
-    x = torch.zeros([2,3,1024,1024])
-    out = model.forward(x)
-
-    print("test")

@@ -1,11 +1,10 @@
 import math
-from nets.ConvNext.convNext-cbam import convnext_tiny_cbam
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Module, Parameter
 from nets.ConvNext.convNext import convnext_tiny
-
+from nets.ConvNext.convNext_cbam import convnext_tiny_cbam
 from nets.iresnet import (iresnet18, iresnet34, iresnet50, iresnet100,
                           iresnet200)
 from nets.mobilefacenet import get_mbf
@@ -49,7 +48,7 @@ class Arcface(nn.Module):
             s = 64
             self.arcface = convnext_tiny(embedding_size=embedding_size)
 
-        elif backbone == "convNext-cbam":
+        elif backbone == "convNext_cbam":
             embedding_size = 512
             s = 64
             self.arcface = convnext_tiny_cbam(embedding_size=embedding_size)
