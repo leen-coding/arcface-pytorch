@@ -10,6 +10,7 @@ from nets.iresnet import (iresnet18, iresnet34, iresnet50, iresnet100,
 from nets.mobilefacenet import get_mbf
 from nets.mobilenet import get_mobilenet
 from nets.mobilefacenet_cbam import get_mbf_cbam
+from nets.mobilefacenet_cbam_modify import get_mbf_cbam_modify
 class Arcface_Head(Module):
     def __init__(self, embedding_size=128, num_classes=10575, s=64., m=0.5):
         super(Arcface_Head, self).__init__()
@@ -57,6 +58,11 @@ class Arcface(nn.Module):
             embedding_size  = 128
             s               = 32
             self.arcface    = get_mbf_cbam(embedding_size=embedding_size, pretrained=pretrained)
+
+        elif backbone=="mobilefacenet_cbam_modify":
+            embedding_size  = 128
+            s               = 32
+            self.arcface    = get_mbf_cbam_modify(embedding_size=embedding_size, pretrained=pretrained)
 
         elif backbone=="mobilenetv1":
             embedding_size  = 512

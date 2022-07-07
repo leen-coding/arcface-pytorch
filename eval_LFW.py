@@ -4,7 +4,7 @@ import torch.backends.cudnn as cudnn
 from nets.arcface import Arcface
 from utils.dataloader import TestDataset
 from utils.utils_metrics import test
-
+from torchcam.methods import SmoothGradCAMpp
 
 if __name__ == "__main__":
     #--------------------------------------#
@@ -30,13 +30,13 @@ if __name__ == "__main__":
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = "result/mobileface-webocc-lfw/ep034-loss4.674-val_loss5.314.pth"
+    model_path      = "model_data/arcface_mobilefacenet.pth"
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
     #--------------------------------------#
-    lfw_dir_path    = "mlfw_dataset/mlfw_aligned_dir/"
-    lfw_pairs_path  = "mlfw_dataset/mlfw_pairs.txt"
+    lfw_dir_path    = "ROF/sunglasses"
+    lfw_pairs_path  = "ROF/glasses_pairs.txt"
     #--------------------------------------#
     #   评估的批次大小和记录间隔
     #--------------------------------------#
@@ -55,6 +55,7 @@ if __name__ == "__main__":
     print('Loading weights into state dict...')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.load_state_dict(torch.load(model_path, map_location=device), strict=False)
+
     model  = model.eval()
 
     if cuda:

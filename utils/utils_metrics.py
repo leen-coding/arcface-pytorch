@@ -3,6 +3,8 @@ import torch
 from scipy import interpolate
 from sklearn.model_selection import KFold
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+from torchcam.utils import overlay_mask
 
 def evaluate(distances, labels, nrof_folds=10):
     # Calculate evaluation metrics
@@ -111,6 +113,7 @@ def test(test_loader, model, png_save_path, log_interval, batch_size, cuda):
             #   获得预测结果的距离
             #--------------------------------------#
             out_a, out_p        = model(data_a), model(data_p)
+
             dists               = torch.sqrt(torch.sum((out_a - out_p) ** 2, 1))
 
         #--------------------------------------#

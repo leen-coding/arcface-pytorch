@@ -142,29 +142,36 @@ class MobileFaceNet(Module):
     def forward(self, x):
         x = self.conv1(x)
         x = self.conv2_dw(x)
+        x = self.ca(x) * x
+        x = self.sa(x) * x
+
         x = self.conv_23(x)
         x = self.conv_3(x)
+        x = self.ca(x) * x
+        x = self.sa(x) * x
+
         x = self.conv_34(x)
         x = self.conv_4(x)
+        x = self.ca(x) * x
+        x = self.sa(x) * x
+
         x = self.conv_45(x)
         x = self.conv_5(x)
+        x = self.ca(x) * x
+        x = self.sa(x) * x
 
         x = self.sep(x)
         x = self.sep_bn(x)
         x = self.prelu(x)
-
         x = self.GDC_dw(x)
         x = self.GDC_bn(x)
-
         x = self.features(x)
-
-        x = self.ca(x) * x
-        x = self.sa(x) * x
         x = self.last_bn(x)
+
         return x
 
 
-def get_mbf_cbam(embedding_size, pretrained):
+def get_mbf_cbam_modify(embedding_size, pretrained):
     if pretrained:
         raise ValueError("No pretrained model for mobilefacenet")
     return MobileFaceNet(embedding_size)
