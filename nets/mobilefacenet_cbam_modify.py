@@ -111,8 +111,7 @@ class MobileFaceNet(Module):
 
         # 56,56,64 -> 56,56,64
         self.conv2_dw = Conv_block(64, 64, kernel=(3, 3), stride=(1, 1), padding=(1, 1), groups=64)
-        self.ca2 = ChannelAttention(64, ratio=4)
-        self.sa2 = SpatialAttention()
+
         # 56,56,64 -> 28,28,64
         self.conv_23 = Residual_Block(64, 64, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=128)
         self.conv_3 = Residual(64, num_block=4, groups=128, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
@@ -122,8 +121,7 @@ class MobileFaceNet(Module):
         # 28,28,64 -> 14,14,128
         self.conv_34 = Residual_Block(64, 128, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=256)
         self.conv_4 = Residual(128, num_block=6, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
-        self.ca4 = ChannelAttention(128, ratio=8)
-        self.sa4 = SpatialAttention()
+
         # 14,14,128 -> 7,7,128
         self.conv_45 = Residual_Block(128, 128, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=512)
         self.conv_5 = Residual(128, num_block=2, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
@@ -161,10 +159,6 @@ class MobileFaceNet(Module):
     def forward(self, x):
         x = self.conv1(x)
         x = self.conv2_dw(x)
-
-        x = self.ca2(x) * x
-        x = self.sa2(x) * x
-
         x = self.conv_23(x)
         x = self.conv_3(x)
         x = self.ca3(x) * x
@@ -172,8 +166,6 @@ class MobileFaceNet(Module):
 
         x = self.conv_34(x)
         x = self.conv_4(x)
-        x = self.ca4(x) * x
-        x = self.sa4(x) * x
 
         x = self.conv_45(x)
         x = self.conv_5(x)
