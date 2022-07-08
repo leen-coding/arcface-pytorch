@@ -111,6 +111,7 @@ class MobileFaceNet(Module):
         self.conv_45    = Residual_Block(128, 128, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=512)
         self.conv_5     = Residual(128, num_block=2, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
 
+
         self.sep        = nn.Conv2d(128, 512, kernel_size=1, bias=False)
         self.sep_bn     = nn.BatchNorm2d(512)
         self.prelu      = nn.PReLU(512)

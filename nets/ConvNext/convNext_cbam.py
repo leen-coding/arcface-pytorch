@@ -133,11 +133,12 @@ class Block(nn.Module):
         x = self.pwconv1(x)
         x = self.act(x)
         x = self.pwconv2(x)
-        # x = self.ca(x) * x
-        # x = self.sa(x) * x
+
         if self.gamma is not None:
             x = self.gamma * x
         x = x.permute(0, 3, 1, 2)  # [N, H, W, C] -> [N, C, H, W]
+        x = self.ca(x) * x
+        x = self.sa(x) * x
 
         x = shortcut + self.drop_path(x)
         return x
@@ -247,3 +248,9 @@ def convnext_xlarge(num_classes: int):
                      dims=[256, 512, 1024, 2048],
                      num_classes=num_classes)
     return model
+if __name__ == "__main__":
+    model = convnext_tiny_cbam(embedding_size=1000)
+
+    x = torch.zeros([2,3,112,112])
+    out = model(x)
+    print("test")

@@ -116,7 +116,7 @@ class MobileFaceNet(Module):
         x = self.sep(x)
         x = self.sep_bn(x)
         x = self.prelu(x)
-        
+
         x = self.GDC_dw(x)
         x = self.GDC_bn(x)
 

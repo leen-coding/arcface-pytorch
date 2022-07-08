@@ -97,13 +97,16 @@ class Arcface(nn.Module):
             raise ValueError('Unsupported backbone - `{}`, Use mobilefacenet, mobilenetv1.'.format(backbone))
 
         self.mode = mode
+
         if mode == "train":
             self.head = Arcface_Head(embedding_size=embedding_size, num_classes=num_classes, s=s)
 
     def forward(self, x, y = None, mode = "predict"):
         x = self.arcface(x)
+
         x = x.view(x.size()[0], -1)
         x = F.normalize(x)
+
         if mode == "predict":
             return x
         else:
