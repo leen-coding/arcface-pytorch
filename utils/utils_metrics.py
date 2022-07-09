@@ -4,7 +4,7 @@ from scipy import interpolate
 from sklearn.model_selection import KFold
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from torchcam.utils import overlay_mask
+
 
 def evaluate(distances, labels, nrof_folds=10):
     # Calculate evaluation metrics

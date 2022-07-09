@@ -30,7 +30,7 @@ class SimilarityToConceptTarget:
 
 def img_process(path):
     img = np.array(Image.open(path))
-    cv2.resize(img, (112, 112))
+    img = cv2.resize(img, (112, 112))
     rgb_img_float = np.float32(img) / 255
     input_tensor = preprocess_image(rgb_img_float,
                                     mean=[0.485, 0.456, 0.406],
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     # --------------------------------------#
     #   训练好的权值文件
     # --------------------------------------#
-    model_path = "result/conv-cbam-webocc-lfw/ep041-loss18.882-val_loss19.173.pth"
+    model_path = "result/conv_cbam_webocc_mlfw_modify/ep033-loss18.782-val_loss19.106.pth"
     # --------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
@@ -83,8 +83,8 @@ if __name__ == "__main__":
     #     TestDataset(dir=lfw_dir_path, pairs_path=lfw_pairs_path, image_size=input_shape), batch_size=batch_size,
     #     shuffle=False, drop_last=False)
 
-    path_ori = "mlfw_dataset/mlfw_aligned_dir/Ahmed_Chalabi/Ahmed_Chalabi_0004_0001.jpg"
-    path_mask = "mlfw_dataset/mlfw_aligned_dir/Ahmed_Chalabi/Ahmed_Chalabi_0001_0001.jpg"
+    path_ori = "mlfw_dataset/mlfw_aligned_dir/Al_Sharpton/Al_Sharpton_0002_0002.jpg"
+    path_mask= "mlfw_dataset/mlfw_aligned_dir/Al_Sharpton/Al_Sharpton_0001_0001.jpg"
 
     ori_img, ori_img_float, ori_img_tensor = img_process(path_ori)
     mask_img, mask_img_float, mask_img_tensor = img_process(path_mask)
@@ -102,7 +102,9 @@ if __name__ == "__main__":
     mask_out = model(mask_img_tensor)[0, :]
     ori_tar = [SimilarityToConceptTarget(ori_out)]
     mask_tar = [SimilarityToConceptTarget(mask_out)]
-    target_layers = [model.arcface.stages[3][2]]
+    target_layers = [model.arcface.stages[3]]
+    # model.arcface.stages[3]
+    # model.arcface.sep
     print(model.arcface)
     with GradCAM(model=model,
                  target_layers=target_layers,
