@@ -5,12 +5,13 @@ import torch.nn.functional as F
 from torch.nn import Module, Parameter
 from nets.ConvNext.convNext import convnext_tiny
 from nets.ConvNext.convNext_cbam import convnext_tiny_cbam
-from nets.iresnet import (iresnet18, iresnet34, iresnet50, iresnet100,
-                          iresnet200)
+
 from nets.mobilefacenet import get_mbf
 from nets.mobilenet import get_mobilenet
 from nets.mobilefacenet_cbam import get_mbf_cbam
 from nets.mobilefacenet_cbam_modify import get_mbf_cbam_modify
+
+
 class Arcface_Head(Module):
     def __init__(self, embedding_size=128, num_classes=10575, s=64., m=0.5):
         super(Arcface_Head, self).__init__()
@@ -64,35 +65,7 @@ class Arcface(nn.Module):
             s               = 32
             self.arcface    = get_mbf_cbam_modify(embedding_size=embedding_size, pretrained=pretrained)
 
-        elif backbone=="mobilenetv1":
-            embedding_size  = 512
-            s               = 64
-            self.arcface    = get_mobilenet(dropout_keep_prob=0.5, embedding_size=embedding_size, pretrained=pretrained)
 
-        elif backbone=="iresnet18":
-            embedding_size  = 512
-            s               = 64
-            self.arcface    = iresnet18(dropout_keep_prob=0.5, embedding_size=embedding_size, pretrained=pretrained)
-
-        elif backbone=="iresnet34":
-            embedding_size  = 512
-            s               = 64
-            self.arcface    = iresnet34(dropout_keep_prob=0.5, embedding_size=embedding_size, pretrained=pretrained)
-
-        elif backbone=="iresnet50":
-            embedding_size  = 512
-            s               = 64
-            self.arcface    = iresnet50(dropout_keep_prob=0.5, embedding_size=embedding_size, pretrained=pretrained)
-
-        elif backbone=="iresnet100":
-            embedding_size  = 512
-            s               = 64
-            self.arcface    = iresnet100(dropout_keep_prob=0.5, embedding_size=embedding_size, pretrained=pretrained)
-
-        elif backbone=="iresnet200":
-            embedding_size  = 512
-            s               = 64
-            self.arcface    = iresnet200(dropout_keep_prob=0.5, embedding_size=embedding_size, pretrained=pretrained)
         else:
             raise ValueError('Unsupported backbone - `{}`, Use mobilefacenet, mobilenetv1.'.format(backbone))
 
@@ -112,3 +85,4 @@ class Arcface(nn.Module):
         else:
             x = self.head(x, y)
             return x
+

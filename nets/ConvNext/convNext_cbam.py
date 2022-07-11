@@ -202,6 +202,7 @@ class ConvNeXt(nn.Module):
         #
         return  self.norm(x.mean([-2, -1]))# global average pooling, (N, C, H, W) -> (N, C)
 
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.forward_features(x)
         x = self.head(x)
@@ -249,8 +250,4 @@ def convnext_xlarge(num_classes: int):
                      num_classes=num_classes)
     return model
 if __name__ == "__main__":
-    model = convnext_tiny_cbam(embedding_size=1000)
-
-    x = torch.zeros([2,3,112,112])
-    out = model(x)
-    print("test")
+    pass

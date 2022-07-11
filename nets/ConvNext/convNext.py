@@ -175,6 +175,7 @@ def convnext_tiny(embedding_size: int):
     model = ConvNeXt(depths=[3, 3, 9, 3],
                      dims=[96, 192, 384, 768],
                      num_classes=embedding_size)
+
     return model
 
 
@@ -212,4 +213,8 @@ def convnext_xlarge(num_classes: int):
     return model
 
 if __name__ == "__main__":
-    pass
+    model = convnext_tiny(embedding_size=1000)
+
+    x = torch.zeros([2, 3, 112, 112])
+    out = model(x)
+    print("test")

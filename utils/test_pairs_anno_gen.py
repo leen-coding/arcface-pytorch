@@ -8,6 +8,7 @@ match_list = []
 unmatch_list = []
 
 class_list = []
+COMBINE_PATH = "D:\\Files\\arcface-pytorch\\ROF\\combined"
 
 MASK_PATH = 'D:\\Files\\Dissertation\\ROF\\masked'
 
@@ -92,11 +93,11 @@ def CEF(path):
 if __name__ == "__main__":
 
     # CEF(GLASSES_PATH)
-    unmatch_list = generate_unmatch_list(MLFW_PATH)
-    match_list = generate_match_list(MLFW_PATH)
+    unmatch_list = generate_unmatch_list(COMBINE_PATH)
+    match_list = generate_match_list(COMBINE_PATH)
     combined_list = unmatch_list + match_list
     random.shuffle(combined_list)
-    f = open("D:\\Files\\Dissertation\\ROF\\lfw_pairs.txt", "w")
+    f = open("D:\\Files\\Dissertation\\ROF\\Combine_pairs.txt", "w")
     for i in combined_list:
         f.write(str(i).replace('[', '').replace(']', '').replace(',', '').replace('\'', '').replace('\'', '') + "\n")
     f.close()

@@ -6,7 +6,8 @@ from utils.dataloader import TestDataset
 from utils.utils_metrics import test
 from torchcam.methods import SmoothGradCAMpp
 
-if __name__ == "__main__":
+
+def run_eval(path):
     #--------------------------------------#
     #   是否使用Cuda
     #   没有GPU可以设置成False
@@ -22,7 +23,7 @@ if __name__ == "__main__":
     #   iresnet100
     #   iresnet200
     #--------------------------------------#
-    backbone        = "mobilefacenet"
+    backbone        = "mobilefacenet_cbam"
     #--------------------------------------#
     #   输入图像大小
     #--------------------------------------#
@@ -30,13 +31,13 @@ if __name__ == "__main__":
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = "result/mobileface-webocc-lfw/ep050-loss4.382-val_loss5.188.pth"
+    model_path      = path
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
     #--------------------------------------#
-    lfw_dir_path    = "mlfw_dataset/mlfw_aligned_dir"
-    lfw_pairs_path  = "mlfw_dataset/mlfw_pairs.txt"
+    lfw_dir_path    = "ROF/combined"
+    lfw_pairs_path  = "ROF/Combine_pairs.txt"
     #--------------------------------------#
     #   评估的批次大小和记录间隔
     #--------------------------------------#
@@ -64,3 +65,6 @@ if __name__ == "__main__":
         model = model.cuda()
 
     test(test_loader, model, png_save_path, log_interval, batch_size, cuda)
+
+if __name__ == "__main__":
+    pass

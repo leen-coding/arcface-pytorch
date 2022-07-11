@@ -34,6 +34,18 @@ class SpatialAttention(nn.Module):
         x = self.conv1(x)
         return self.sigmoid(x)
 
+class cbam(Module):
+    def __init__(self, planes):
+        super(cbam, self).__init__()
+        self.ca = ChannelAttention(planes, ratio=16)
+        self.sa = SpatialAttention(kernel_size=7)
+
+    def forward(self, x):
+        # ca_map = self.ca(x)
+        x = self.ca(x) * x  # 广播机制
+        # sa_map = self.sa(x)
+        x = self.sa(x) * x  # 广播机制
+        return x
 
 class Flatten(Module):
     def forward(self, input):
@@ -53,7 +65,9 @@ class Residual_Block(Module):
      def __init__(self, in_c, out_c, residual = False, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=1):
         super(Residual_Block, self).__init__()
         self.conv       = Conv_block(in_c, out_c=groups, kernel=(1, 1), padding=(0, 0), stride=(1, 1))
+
         self.conv_dw    = Conv_block(groups, groups, groups=groups, kernel=kernel, padding=padding, stride=stride)
+        self.cbam = cbam(groups)
         self.project    = Linear_block(groups, out_c, kernel=(1, 1), padding=(0, 0), stride=(1, 1))
         self.residual   = residual
      def forward(self, x):
@@ -61,6 +75,7 @@ class Residual_Block(Module):
             short_cut = x
         x = self.conv(x)
         x = self.conv_dw(x)
+        x = self.cbam(x)
         x = self.project(x)
         if self.residual:
             output = short_cut + x
@@ -111,7 +126,6 @@ class MobileFaceNet(Module):
         self.conv_45    = Residual_Block(128, 128, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=512)
         self.conv_5     = Residual(128, num_block=2, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
 
-
         self.sep        = nn.Conv2d(128, 512, kernel_size=1, bias=False)
         self.sep_bn     = nn.BatchNorm2d(512)
         self.prelu      = nn.PReLU(512)
@@ -121,8 +135,6 @@ class MobileFaceNet(Module):
 
         self.features   = nn.Conv2d(512, embedding_size, kernel_size=1, bias=False)
         self.last_bn    = nn.BatchNorm2d(embedding_size)
-        self.ca = ChannelAttention(embedding_size)
-        self.sa = SpatialAttention()
   
         self._initialize_weights()
 
@@ -158,9 +170,6 @@ class MobileFaceNet(Module):
         x = self.GDC_bn(x)
 
         x = self.features(x)
-
-        x = self.ca(x) * x
-        x = self.sa(x) * x
         x = self.last_bn(x)
         return x
 

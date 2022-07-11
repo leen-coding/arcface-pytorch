@@ -9,22 +9,20 @@ from PIL import Image
 from pytorch_grad_cam.utils.image import show_cam_on_image, preprocess_image
 
 
-class ResnetFeatureExtractor(torch.nn.Module):
-    def __init__(self, model):
-        super(ResnetFeatureExtractor, self).__init__()
-        self.model = model
-        self.feature_extractor = torch.nn.Sequential(*list(self.model.children())[:-1])
-
-    def __call__(self, x):
-        return self.feature_extractor(x)[:, :, 0, 0]
-
 class SimilarityToConceptTarget:
     def __init__(self, features):
         self.features = features
 
+    # def __call__(self, model_output):
+    #     cos = torch.nn.CosineSimilarity(dim=0)
+    #     test = cos(model_output, self.features)
+    #     return test
+
     def __call__(self, model_output):
-        cos = torch.nn.CosineSimilarity(dim=0)
-        return cos(model_output, self.features)
+        dists = torch.sqrt(torch.sum((model_output - self.features) ** 2, 0))
+        return  1-dists
+
+
 
 
 
@@ -62,7 +60,7 @@ if __name__ == "__main__":
     # --------------------------------------#
     #   训练好的权值文件
     # --------------------------------------#
-    model_path = "result/conv_cbam_webocc_mlfw_modify/ep033-loss18.782-val_loss19.106.pth"
+    model_path = "result/conv_cbam_webocc_mlfw_modify/ep050-loss18.635-val_loss18.473.pth"
     # --------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
@@ -83,8 +81,8 @@ if __name__ == "__main__":
     #     TestDataset(dir=lfw_dir_path, pairs_path=lfw_pairs_path, image_size=input_shape), batch_size=batch_size,
     #     shuffle=False, drop_last=False)
 
-    path_ori = "mlfw_dataset/mlfw_aligned_dir/Al_Sharpton/Al_Sharpton_0002_0002.jpg"
-    path_mask= "mlfw_dataset/mlfw_aligned_dir/Al_Sharpton/Al_Sharpton_0001_0001.jpg"
+    path_mask = "lfw/Aaron_Peirsol/Aaron_Peirsol_0001.jpg"
+    path_ori= "lfw/Aaron_Peirsol/Aaron_Peirsol_0003.jpg"
 
     ori_img, ori_img_float, ori_img_tensor = img_process(path_ori)
     mask_img, mask_img_float, mask_img_tensor = img_process(path_mask)
