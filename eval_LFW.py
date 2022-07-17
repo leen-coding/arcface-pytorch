@@ -4,10 +4,10 @@ import torch.backends.cudnn as cudnn
 from nets.arcface import Arcface
 from utils.dataloader import TestDataset
 from utils.utils_metrics import test
-from torchcam.methods import SmoothGradCAMpp
 
 
-def run_eval(path):
+
+if __name__ == "__main__":
     #--------------------------------------#
     #   是否使用Cuda
     #   没有GPU可以设置成False
@@ -23,7 +23,7 @@ def run_eval(path):
     #   iresnet100
     #   iresnet200
     #--------------------------------------#
-    backbone        = "mobilefacenet_cbam"
+    backbone        = "mobilefacenet_cbam_v2"
     #--------------------------------------#
     #   输入图像大小
     #--------------------------------------#
@@ -31,13 +31,13 @@ def run_eval(path):
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = path
+    model_path      = "result/mobilefacenet-webocc_cbam_mlfw_v2/ep050-loss14.097-val_loss14.346.pth"
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
     #--------------------------------------#
     lfw_dir_path    = "ROF/combined"
-    lfw_pairs_path  = "ROF/Combine_pairs.txt"
+    lfw_pairs_path  = "ROF/ROFCombine_m_un_pairs_clean.txt"
     #--------------------------------------#
     #   评估的批次大小和记录间隔
     #--------------------------------------#
@@ -66,5 +66,5 @@ def run_eval(path):
 
     test(test_loader, model, png_save_path, log_interval, batch_size, cuda)
 
-if __name__ == "__main__":
-    pass
+
+

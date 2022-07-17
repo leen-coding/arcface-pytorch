@@ -97,7 +97,7 @@ if __name__ == "__main__":
     match_list = generate_match_list(COMBINE_PATH)
     combined_list = unmatch_list + match_list
     random.shuffle(combined_list)
-    f = open("D:\\Files\\Dissertation\\ROF\\Combine_pairs.txt", "w")
+    f = open("D:\\Files\\Dissertation\\ROF\\Combine_pairs_clean.txt", "w")
     for i in combined_list:
         f.write(str(i).replace('[', '').replace(']', '').replace(',', '').replace('\'', '').replace('\'', '') + "\n")
     f.close()

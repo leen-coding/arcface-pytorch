@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 def evaluate(distances, labels, nrof_folds=10):
     # Calculate evaluation metrics
-    thresholds = np.arange(0, 4, 0.01)
+    thresholds = np.arange(0, 3, 0.0001)
     tpr, fpr, accuracy, best_thresholds = calculate_roc(thresholds, distances,
         labels, nrof_folds=nrof_folds)
     thresholds = np.arange(0, 4, 0.001)

@@ -134,10 +134,14 @@ class TestDataset(datasets.ImageFolder):
         #for pair in pairs:
             pair = pairs[i]
             if len(pair) == 3:
+                # path0 = os.path.join(lfw_dir, pair[0], pair[0] + '_' + '%04d' % int(pair[1]) + '.' + file_ext)
+                # path1 = os.path.join(lfw_dir, pair[0], pair[0] + '_' + '%04d' % int(pair[2]) + '.' + file_ext)
                 path0 = os.path.join(lfw_dir, pair[0], pair[1])
                 path1 = os.path.join(lfw_dir, pair[0], pair[2])
                 issame = True
             elif len(pair) == 4:
+                # path0 = os.path.join(lfw_dir, pair[0], pair[0] + '_' + '%04d' % int(pair[1]) + '.' + file_ext)
+                # path1 = os.path.join(lfw_dir, pair[2], pair[2] + '_' + '%04d' % int(pair[3]) + '.' + file_ext)
                 path0 = os.path.join(lfw_dir, pair[0], pair[1])
                 path1 = os.path.join(lfw_dir, pair[2], pair[3])
                 issame = False
@@ -158,7 +162,8 @@ class TestDataset(datasets.ImageFolder):
         image1 = resize_image(image1, [self.image_size[1], self.image_size[0]], letterbox_image = True)
         image2 = resize_image(image2, [self.image_size[1], self.image_size[0]], letterbox_image = True)
         
-        image1, image2 = np.transpose(preprocess_input(np.array(image1, np.float32)),[2, 0, 1]), np.transpose(preprocess_input(np.array(image2, np.float32)),[2, 0, 1])
+        image1, image2 = np.transpose(preprocess_input(np.array(image1, np.float32)),[2, 0, 1]), \
+                         np.transpose(preprocess_input(np.array(image2, np.float32)),[2, 0, 1])
 
         return image1, image2, issame
 

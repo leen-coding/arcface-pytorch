@@ -7,12 +7,12 @@ if __name__ == "__main__":
     #---------------------#
     #   训练集所在的路径
     #---------------------#
-    datasets_path   = "D:\\Files\\dataset\\rec2img_masked"
+    datasets_path   = "datasets1o2"
 
     types_name      = os.listdir(datasets_path)
     # types_name      = sorted(types_name)
 
-    list_file = open('cls_train-webocc.txt', 'w')
+    list_file = open('cls_train.txt', 'w')
     for cls_id, type_name in enumerate(types_name):
         photos_path = os.path.join(datasets_path, type_name)
         if not os.path.isdir(photos_path):
