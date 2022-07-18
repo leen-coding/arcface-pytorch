@@ -177,7 +177,7 @@ class MobileFaceNet(Module):
         return x
 
 
-def get_mbf_cbam_v3(embedding_size, pretrained):
+def get_mbf_cbam_v4(embedding_size, pretrained):
     if pretrained:
         raise ValueError("No pretrained model for mobilefacenet")
     return MobileFaceNet(embedding_size)
