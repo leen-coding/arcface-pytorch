@@ -13,8 +13,7 @@ from nets.mobilefacenet_cbam_modify import get_mbf_cbam_modify
 from nets.mobilefacenet_cbam_v2 import get_mbf_cbam_v2
 from nets.mobilefacenet_cbam_v3 import get_mbf_cbam_v3
 from nets.mobilefacenet_cbam_v4 import get_mbf_cbam_v4
-
-
+from nets.Resnet_raw import resnet50
 class Arcface_Head(Module):
     def __init__(self, embedding_size=128, num_classes=10575, s=64., m=0.5):
         super(Arcface_Head, self).__init__()
@@ -47,6 +46,10 @@ class Arcface(nn.Module):
             embedding_size  = 128
             s               = 32
             self.arcface    = get_mbf(embedding_size=embedding_size, pretrained=pretrained)
+        elif backbone == "resnet50":
+            embedding_size  = 128
+            s               = 32
+            self.arcface    = resnet50(num_classes= embedding_size, include_top=True)
 
         elif backbone == "convNext":
             embedding_size = 512
@@ -86,6 +89,7 @@ class Arcface(nn.Module):
             self.head = Arcface_Head(embedding_size=embedding_size, num_classes=num_classes, s=s)
 
     def forward(self, x, y = None, mode = "predict"):
+
         x = self.arcface(x)
 
         x = x.view(x.size()[0], -1)
@@ -97,3 +101,9 @@ class Arcface(nn.Module):
             x = self.head(x, y)
             return x
 
+if __name__ == "__main__":
+    model =Arcface(backbone=resnet50)
+
+    x = torch.zeros([2,3,112,112])
+    out = model(x)
+    print("test")

@@ -67,8 +67,8 @@ if __name__ == "__main__":
     # --------------------------------------#
     backbone1 = "mobilefacenet"
     model_path1 = "result/mobileface-webocc-lfw/ep050-loss4.382-val_loss5.188.pth"
-    backbone2 = "convNext_cbam"
-    model_path2 = "result/conv_cbam_webocc_mlfw_modify/ep050-loss18.635-val_loss18.473.pth"
+    backbone2 = "mobilefacenet_cbam_v4"
+    model_path2 = "result/mobilefacenet_cbam_web_v4/ep030-loss7.562-val_loss8.903.pth"
     # --------------------------------------#
     #   输入图像大小
     # --------------------------------------#
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     model2 = Arcface(backbone=backbone2, mode="predict")
     model2.load_state_dict(torch.load(model_path2, map_location=device), strict=False)
     model2 = model2.eval()
-    target_layers2 = [model2.arcface.stages[3]]
+    target_layers2 = [model2.arcface.sep]
 
     for batch in test_loader:
         if time <= num:
