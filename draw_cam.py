@@ -65,8 +65,8 @@ if __name__ == "__main__":
     #   iresnet100
     #   iresnet200
     # --------------------------------------#
-    backbone1 = "convNext"
-    model_path1 = "result/conv-webocc-lfw/ep036-loss18.593-val_loss18.595.pth"
+    backbone1 = "mobilefacenet"
+    model_path1 = "result/mobileface-webocc-lfw/ep050-loss4.382-val_loss5.188.pth"
     backbone2 = "convNext_cbam"
     model_path2 = "result/conv_cbam_webocc_mlfw_modify/ep050-loss18.635-val_loss18.473.pth"
     # --------------------------------------#
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     model1.load_state_dict(torch.load(model_path1, map_location=device), strict=False)
     model = model1.eval()
     # model1.arcface.sep
-    target_layers1 = [model1.arcface.stages[3]]
+    target_layers1 = [model1.arcface.sep]
     # model1.arcface.stages[3]
     model2 = Arcface(backbone=backbone2, mode="predict")
     model2.load_state_dict(torch.load(model_path2, map_location=device), strict=False)
