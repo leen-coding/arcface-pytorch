@@ -107,7 +107,7 @@ if __name__ == "__main__":
     #   Epoch           模型总共训练的epoch
     #   batch_size      每次输入的图片数量
     # ------------------------------------------------------#
-    Init_Epoch = 1
+    Init_Epoch = 0
     Epoch = 50
     batch_size = 4
 

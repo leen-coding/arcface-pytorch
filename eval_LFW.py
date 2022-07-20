@@ -23,7 +23,7 @@ if __name__ == "__main__":
     #   iresnet100
     #   iresnet200
     #--------------------------------------#
-    backbone        = "mobilefacenet_cbam_v4"
+    backbone        = "mobilefacenet"
     #--------------------------------------#
     #   输入图像大小
     #--------------------------------------#
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = "result/mobilefacenet_cbam_web_v4/ep030-loss7.562-val_loss8.903.pth"
+    model_path      = "result/mobileface-web1o2/ep050-loss7.186-val_loss8.717.pth"
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件

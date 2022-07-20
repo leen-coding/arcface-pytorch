@@ -66,9 +66,9 @@ if __name__ == "__main__":
     #   iresnet200
     # --------------------------------------#
     backbone1 = "mobilefacenet"
-    model_path1 = "result/mobileface-webocc-lfw/ep050-loss4.382-val_loss5.188.pth"
-    backbone2 = "mobilefacenet_cbam_v4"
-    model_path2 = "result/mobilefacenet_cbam_web_v4/ep030-loss7.562-val_loss8.903.pth"
+    model_path1 = "result/mobileface-web1o2/ep050-loss7.186-val_loss8.717.pth"
+    backbone2 = "mobilefacenet_two_branch_v2"
+    model_path2 = "result/mobileface_web1o2_two_branch_v2/ep032-loss6.828-val_loss8.282.pth"
     # --------------------------------------#
     #   输入图像大小
     # --------------------------------------#
@@ -107,11 +107,12 @@ if __name__ == "__main__":
     model2 = Arcface(backbone=backbone2, mode="predict")
     model2.load_state_dict(torch.load(model_path2, map_location=device), strict=False)
     model2 = model2.eval()
-    target_layers2 = [model2.arcface.sep]
+    print(model2.arcface)
+    target_layers2 = [model2.arcface.stage1[-1]]
 
     for batch in test_loader:
         if time <= num:
-            img1, img2, _ = batch
+            img1, img2, issame = batch
             img1_plt = np.array(torch.permute(torch.squeeze(img1), (1, 2, 0))) * 0.5 + 0.5
             img2_plt = np.array(torch.permute(torch.squeeze(img2), (1, 2, 0))) * 0.5 + 0.5
             img2_numpy = np.array(img2_plt, dtype='float32')
@@ -124,8 +125,32 @@ if __name__ == "__main__":
             plt.imshow(img2_numpy)
             plt.title("occ")
             ori_out1 = model1(img1)[0, :]
+
+            print(issame)
+
+            ori_np1 = ori_out1.detach().numpy().reshape(-1,1)
+            mask_out1 = model1(img2)[0, :]
+            mask_np1 = mask_out1.detach().numpy().reshape(-1,1)
+            dists1 = torch.sqrt(torch.sum((ori_out1 - mask_out1) ** 2, 0))
+            norm_out1 = normalization(ori_np1[:,0])
+            norm_mask_out1 = normalization(mask_np1[:,0])
+            norm_dist1 = np.sqrt(np.sum((norm_out1-norm_mask_out1)**2,0))
+            print("embeddings 1 dis = {}".format(norm_dist1))
+
+
+
             ori_tar1 = [SimilarityToConceptTarget(ori_out1)]
             ori_out2 = model2(img1)[0, :]
+
+            ori_np2 = ori_out2.detach().numpy().reshape(-1,1)
+            mask_out2 = model2(img2)[0, :]
+            mask_np2 = mask_out2.detach().numpy().reshape(-1,1)
+            dists2 = torch.sqrt(torch.sum((ori_out2 - mask_out2) ** 2, 0))
+            norm_out2 = normalization(ori_np2[:,0])
+            norm_mask_out2 = normalization(mask_np2[:,0])
+            norm_dist2 = np.sqrt(np.sum((norm_out2-norm_mask_out2)**2,0))
+            print("embeddings 2 dis = {}".format(norm_dist2))
+
             ori_tar2 = [SimilarityToConceptTarget(ori_out2)]
             with GradCAM(model=model1,
                          target_layers=target_layers1,

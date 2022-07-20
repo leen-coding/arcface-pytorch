@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torch.nn import Module, Parameter
 from nets.ConvNext.convNext import convnext_tiny
 from nets.ConvNext.convNext_cbam import convnext_tiny_cbam
-
+from nets.mobilefacenet_two_branch_v2 import get_mbf_two_branch
 from nets.mobilefacenet import get_mbf
 from nets.mobilenet import get_mobilenet
 from nets.mobilefacenet_cbam import get_mbf_cbam
@@ -14,6 +14,7 @@ from nets.mobilefacenet_cbam_v2 import get_mbf_cbam_v2
 from nets.mobilefacenet_cbam_v3 import get_mbf_cbam_v3
 from nets.mobilefacenet_cbam_v4 import get_mbf_cbam_v4
 from nets.Resnet_raw import resnet50
+from nets.mobilefacenet_two_branch_v3 import get_mbf_two_branch_v3
 class Arcface_Head(Module):
     def __init__(self, embedding_size=128, num_classes=10575, s=64., m=0.5):
         super(Arcface_Head, self).__init__()
@@ -60,6 +61,16 @@ class Arcface(nn.Module):
             embedding_size = 512
             s = 64
             self.arcface = convnext_tiny_cbam(embedding_size=embedding_size)
+
+        elif backbone == "mobilefacenet_two_branch_v2":
+            embedding_size = 128
+            s = 32
+            self.arcface = get_mbf_two_branch(embedding_size=embedding_size, pretrained=pretrained)
+
+        elif backbone == "mobilefacenet_two_branch_v3":
+            embedding_size = 128
+            s = 32
+            self.arcface = get_mbf_two_branch_v3(embedding_size=embedding_size, pretrained=pretrained)
 
         elif backbone=="mobilefacenet_cbam":
             embedding_size  = 128
