@@ -67,10 +67,11 @@ if __name__ == "__main__":
     # --------------------------------------#
     backbone1 = "mobilefacenet"
     model_path1 = "result/mobileface-web1o2/ep050-loss7.186-val_loss8.717.pth"
-    backbone2 = "mobilefacenet_two_branch_v2"
-    model_path2 = "result/mobileface_web1o2_two_branch_v2/ep032-loss6.828-val_loss8.282.pth"
+    backbone2 = "mobilefacenet_two_branch_v3"
+    model_path2 = "result/mobileface-web1o2-two_branch_v3/ep032-loss6.853-val_loss8.570.pth"
     # --------------------------------------#
     #   输入图像大小
+
     # --------------------------------------#
     input_shape = [112, 112, 3]
     # --------------------------------------#
