@@ -103,9 +103,9 @@ class Conv_block(Module):
         return x
 
 class after_feature(Module):
-    def __init__(self,embedding_size,kernel_size, ifcbam = False):
+    def __init__(self,embedding_size,kernel_size,ifcbam = False):
         super(after_feature, self).__init__()
-        self.conv_45 = Residual_Block(128, 128, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=512)
+        self.conv_45 = Residual_Block(128, 128, kernel=(3,3), stride=(2, 2), padding=(1, 1), groups=512)
         self.conv_5 = Residual(128, num_block=2, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
 
         self.sep = nn.Conv2d(128, 512, kernel_size=1, bias=False)
@@ -139,6 +139,43 @@ class after_feature(Module):
         x = self.last_bn(x)
         return x
 
+class after_feature_branch(Module):
+    def __init__(self,embedding_size,kernel_size, ifcbam = False):
+        super(after_feature_branch, self).__init__()
+        self.conv_45 = Residual_Block(128, 128, kernel=(3,3), stride=(2, 2), padding=0, groups=512)
+        self.conv_5 = Residual(128, num_block=2, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
+
+        self.sep = nn.Conv2d(128, 512, kernel_size=1, bias=False)
+        self.sep_bn = nn.BatchNorm2d(512)
+        self.prelu = nn.PReLU(512)
+
+        self.GDC_dw= nn.Conv2d(512, 512, kernel_size=kernel_size, bias=False, groups=512)
+        self.GDC_bn = nn.BatchNorm2d(512)
+
+        self.features = nn.Conv2d(512, embedding_size, kernel_size=1, bias=False)
+        self.last_bn = nn.BatchNorm2d(embedding_size)
+        self.cbam = ifcbam
+        if self.cbam:
+            self.cbam_func = cbam(planes= embedding_size, ratio = 2)
+
+    def forward(self, x):
+
+        if self.cbam:
+            x = self.cbam_func(x)
+        x = self.conv_45(x)
+        x = self.conv_5(x)
+
+        x = self.sep(x)
+        x = self.sep_bn(x)
+        x = self.prelu(x)
+
+        x = self.GDC_dw(x)
+        x = self.GDC_bn(x)
+
+        x = self.features(x)
+        x = self.last_bn(x)
+        return x
+
 class MobileFaceNet(Module):
     def __init__(self, embedding_size):
         super(MobileFaceNet, self).__init__()
@@ -153,12 +190,15 @@ class MobileFaceNet(Module):
         self.conv_3     = Residual(64, num_block=4, groups=128, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
 
         # 28,28,64 -> 14,14,128
-        self.conv_34    = Residual_Block(64, 128, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=256)
+        self.conv_34    = Residual_Block(64, 128, kernel=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
         self.conv_4     = Residual(128, num_block=6, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
 
-        self.after_feature_up = after_feature(embedding_size=64, kernel_size=(4,7),ifcbam=True)
-        self.after_feature_down = after_feature(embedding_size=64, kernel_size=(4, 7),ifcbam=True)
-        self.after_feature_g = after_feature(embedding_size=128, kernel_size=(7,7),ifcbam = False)
+        self.after_feature_branch1 = after_feature_branch(embedding_size=32,kernel_size =(3, 13))
+        self.after_feature_branch2 = after_feature_branch(embedding_size=32, kernel_size=(3, 13))
+        self.after_feature_branch3 = after_feature_branch(embedding_size=32, kernel_size=(3, 13))
+        self.after_feature_branch4 = after_feature_branch(embedding_size=32, kernel_size=(3, 13))
+
+        self.after_feature_g = after_feature(embedding_size=128, kernel_size=(7,7),ifcbam=True)
         self.stage1 = nn.Sequential(self.conv1, self.conv2_dw, self.conv_23, self.conv_3, self.conv_34, self.conv_4)
         self._initialize_weights()
 
@@ -180,23 +220,26 @@ class MobileFaceNet(Module):
     def forward(self, x):
         x = self.stage1(x)
 
-        x1, x2 = torch.split(x, 7, dim=2)
+        x1, x2, x3, x4 = torch.split(x, 7, dim=2)
 
-        x1 = self.after_feature_up(x1)
-        x2 = self.after_feature_down(x2)
+        x1 = self.after_feature_branch1(x1)
+        x2 = self.after_feature_branch2(x2)
+        x3 = self.after_feature_branch3(x3)
+        x4 = self.after_feature_branch4(x4)
+
         xg = self.after_feature_g(x)
-        x_side = torch.cat([x1,x2],1)
+        x_side = torch.cat([x1,x2,x3,x4],1)
         x = xg + x_side
         return x
 
 
-def get_mbf_two_branch_v5(embedding_size, pretrained):
+def get_mbf_two_branch_v6(embedding_size, pretrained):
     if pretrained:
         raise ValueError("No pretrained model for mobilefacenet")
     return MobileFaceNet(embedding_size)
 
 if __name__ == "__main__":
-    model = get_mbf_two_branch_v5(embedding_size=128,pretrained=False)
+    model = get_mbf_two_branch_v6(embedding_size=128,pretrained=False)
 
     x = torch.zeros([2,3,112,112])
     out = model(x)
