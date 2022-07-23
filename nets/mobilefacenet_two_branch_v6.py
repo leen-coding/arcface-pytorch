@@ -102,10 +102,13 @@ class Conv_block(Module):
         x = self.prelu(x)
         return x
 
+
 class after_feature(Module):
     def __init__(self,embedding_size,kernel_size,ifcbam = False):
         super(after_feature, self).__init__()
-        self.conv_45 = Residual_Block(128, 128, kernel=(3,3), stride=(2, 2), padding=(1, 1), groups=512)
+        self.conv_34    = Residual_Block(64, 128, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=256)
+        self.conv_4     = Residual(128, num_block=6, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
+        self.conv_45 = Residual_Block(128, 128, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=512)
         self.conv_5 = Residual(128, num_block=2, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
 
         self.sep = nn.Conv2d(128, 512, kernel_size=1, bias=False)
@@ -125,6 +128,9 @@ class after_feature(Module):
 
         if self.cbam:
             x = self.cbam_func(x)
+
+        x = self.conv_34(x)
+        x = self.conv_4(x)
         x = self.conv_45(x)
         x = self.conv_5(x)
 
@@ -142,6 +148,9 @@ class after_feature(Module):
 class after_feature_branch(Module):
     def __init__(self,embedding_size,kernel_size, ifcbam = False):
         super(after_feature_branch, self).__init__()
+        self.conv_34 = Residual_Block(64, 128, kernel=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
+        self.conv_4 = Residual(128, num_block=6, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
+
         self.conv_45 = Residual_Block(128, 128, kernel=(3,3), stride=(2, 2), padding=0, groups=512)
         self.conv_5 = Residual(128, num_block=2, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
 
@@ -156,12 +165,15 @@ class after_feature_branch(Module):
         self.last_bn = nn.BatchNorm2d(embedding_size)
         self.cbam = ifcbam
         if self.cbam:
-            self.cbam_func = cbam(planes= embedding_size, ratio = 2)
+            self.cbam_func = cbam(planes= 128, ratio = 2)
 
     def forward(self, x):
-
         if self.cbam:
             x = self.cbam_func(x)
+
+        x = self.conv_34(x)
+        x = self.conv_4(x)
+
         x = self.conv_45(x)
         x = self.conv_5(x)
 
@@ -190,16 +202,13 @@ class MobileFaceNet(Module):
         self.conv_3     = Residual(64, num_block=4, groups=128, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
 
         # 28,28,64 -> 14,14,128
-        self.conv_34    = Residual_Block(64, 128, kernel=(3, 3), stride=(1, 1), padding=(1, 1), groups=256)
-        self.conv_4     = Residual(128, num_block=6, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
-
         self.after_feature_branch1 = after_feature_branch(embedding_size=32,kernel_size =(3, 13))
         self.after_feature_branch2 = after_feature_branch(embedding_size=32, kernel_size=(3, 13))
         self.after_feature_branch3 = after_feature_branch(embedding_size=32, kernel_size=(3, 13))
         self.after_feature_branch4 = after_feature_branch(embedding_size=32, kernel_size=(3, 13))
 
-        self.after_feature_g = after_feature(embedding_size=128, kernel_size=(7,7),ifcbam=True)
-        self.stage1 = nn.Sequential(self.conv1, self.conv2_dw, self.conv_23, self.conv_3, self.conv_34, self.conv_4)
+        self.after_feature_g = after_feature(embedding_size=embedding_size, kernel_size=(7,7),ifcbam=False)
+        self.stage1 = nn.Sequential(self.conv1, self.conv2_dw, self.conv_23, self.conv_3)
         self._initialize_weights()
 
 
