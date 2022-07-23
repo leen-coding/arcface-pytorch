@@ -122,13 +122,13 @@ class after_feature(Module):
         self.last_bn = nn.BatchNorm2d(embedding_size)
         self.cbam = ifcbam
         if self.cbam:
-            self.cbam_func = cbam(planes= 128, ratio = 4)
+            self.cbam_func = cbam(planes= 64
+                                  , ratio = 4)
 
     def forward(self, x):
 
         if self.cbam:
             x = self.cbam_func(x)
-
         x = self.conv_34(x)
         x = self.conv_4(x)
         x = self.conv_45(x)
@@ -165,7 +165,7 @@ class after_feature_branch(Module):
         self.last_bn = nn.BatchNorm2d(embedding_size)
         self.cbam = ifcbam
         if self.cbam:
-            self.cbam_func = cbam(planes= 128, ratio = 2)
+            self.cbam_func = cbam(planes= 64, ratio = 2)
 
     def forward(self, x):
         if self.cbam:
@@ -207,7 +207,7 @@ class MobileFaceNet(Module):
         self.after_feature_branch3 = after_feature_branch(embedding_size=32, kernel_size=(3, 13))
         self.after_feature_branch4 = after_feature_branch(embedding_size=32, kernel_size=(3, 13))
 
-        self.after_feature_g = after_feature(embedding_size=embedding_size, kernel_size=(7,7),ifcbam=False)
+        self.after_feature_g = after_feature(embedding_size=embedding_size, kernel_size=(7,7),ifcbam=True)
         self.stage1 = nn.Sequential(self.conv1, self.conv2_dw, self.conv_23, self.conv_3)
         self._initialize_weights()
 
