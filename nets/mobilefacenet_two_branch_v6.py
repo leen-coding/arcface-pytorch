@@ -122,15 +122,16 @@ class after_feature(Module):
         self.last_bn = nn.BatchNorm2d(embedding_size)
         self.cbam = ifcbam
         if self.cbam:
-            self.cbam_func = cbam(planes= 64
+            self.cbam_func = cbam(planes= 128
                                   , ratio = 4)
 
     def forward(self, x):
 
-        if self.cbam:
-            x = self.cbam_func(x)
+
         x = self.conv_34(x)
         x = self.conv_4(x)
+        if self.cbam:
+            x = self.cbam_func(x)
         x = self.conv_45(x)
         x = self.conv_5(x)
 

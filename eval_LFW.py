@@ -23,7 +23,7 @@ if __name__ == "__main__":
     #   iresnet100
     #   iresnet200
     #--------------------------------------#
-    backbone        = "mobilefacenet_two_branch_v3"
+    backbone        = "mobilefacenet_cbam_v3"
     #--------------------------------------#
     #   输入图像大小
     #--------------------------------------#
@@ -31,13 +31,13 @@ if __name__ == "__main__":
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = "result/mobileface-web1o2-two_branch_v3/ep032-loss6.853-val_loss8.570.pth"
+    model_path      = "result/mobileface-web1o2-two_branch_v3/ep049-loss6.739-val_loss8.510.pth"
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
     #--------------------------------------#
-    lfw_dir_path    = "lfw"
-    lfw_pairs_path  = "model_data/lfw_pairs_test.txt"
+    lfw_dir_path    = "mlfw_dataset/mlfw_aligned_dir"
+    lfw_pairs_path  = "mlfw_dataset/mlfw_pairs.txt"
     #--------------------------------------#
     #   评估的批次大小和记录间隔
     #--------------------------------------#
