@@ -144,17 +144,21 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
+        #224*224 -> 112*112
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
-
+        #112*112 -> 56*56
         x = self.layer1(x)
         x = self.layer2(x)
+        # 56*56 -> 28*28
         x = self.layer3(x)
+        # 28*28 -> 14*14
         x = self.layer4(x)
-
+        # 14*14 -> 7*7
         if self.include_top:
             x = self.avgpool(x)
+            #7*7->1*1
             x = torch.flatten(x, 1)
             x = self.fc(x)
 

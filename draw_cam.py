@@ -69,6 +69,10 @@ if __name__ == "__main__":
     model_path1 = "result/mobileface-web1o2/ep050-loss7.186-val_loss8.717.pth"
     backbone2 = "mobilefacenet_two_branch_v3"
     model_path2 = "result/mobileface-web1o2-two_branch_v3/ep032-loss6.853-val_loss8.570.pth"
+
+
+    # mobilefacenet_two_branch_v6
+    # "result/mobileface-web1o2-7_branch_cbam_v6/ep049-loss5.901-val_loss7.872.pth"
     # --------------------------------------#
     #   输入图像大小
 
