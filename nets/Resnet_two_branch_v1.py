@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch
+from torch.nn import functional
 
 
 class BasicBlock(nn.Module):
@@ -44,9 +45,15 @@ class Bottleneck(nn.Module):
     expansion = 4
 
     def __init__(self, in_channel, out_channel, stride=1, downsample=None,
-                 groups=1, width_per_group=64):
+                 groups=1, width_per_group=64, ifbranch = False, ifbranchnext = False):
         super(Bottleneck, self).__init__()
+        self.ifbranch = ifbranch
+        self.ifbranchnext = ifbranchnext
+        if self.ifbranch:
+            kernelsize = (3, 10)
 
+        else:
+            kernelsize = (3, 3)
         width = int(out_channel * (width_per_group / 64.)) * groups
 
         self.conv1 = nn.Conv2d(in_channels=in_channel, out_channels=width,
@@ -54,7 +61,7 @@ class Bottleneck(nn.Module):
         self.bn1 = nn.BatchNorm2d(width)
         # -----------------------------------------
         self.conv2 = nn.Conv2d(in_channels=width, out_channels=width, groups=groups,
-                               kernel_size=3, stride=stride, bias=False, padding=1)
+                               kernel_size=kernelsize, stride=stride, bias=False, padding=1)
         self.bn2 = nn.BatchNorm2d(width)
         # -----------------------------------------
         self.conv3 = nn.Conv2d(in_channels=width, out_channels=out_channel*self.expansion,
@@ -78,8 +85,8 @@ class Bottleneck(nn.Module):
 
         out = self.conv3(out)
         out = self.bn3(out)
-
-        out += identity
+        if not self.ifbranch:
+            out += identity
         out = self.relu(out)
 
         return out
@@ -95,9 +102,12 @@ class ResNet(nn.Module):
                  groups=1,
                  width_per_group=64):
         super(ResNet, self).__init__()
+        self.branch1 = Bottleneck
+        self.branch2 = Bottleneck
         self.include_top = include_top
         self.in_channel = 64
-
+        self.branch1_in_channel = 1024
+        self.branch2_in_channel = 1024
         self.groups = groups
         self.width_per_group = width_per_group
 
@@ -109,16 +119,23 @@ class ResNet(nn.Module):
         self.layer1 = self._make_layer(block, 64, blocks_num[0])
         self.layer2 = self._make_layer(block, 128, blocks_num[1], stride=2)
         self.layer3 = self._make_layer(block, 256, blocks_num[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, blocks_num[3], stride=2)
+        self.layer4g = self._make_layer(block, 512, blocks_num[3], stride=2)
+        self.layer41 = self._make_branchlayers1(self.branch1, 512, blocks_num[3], stride=2)
+        self.layer42 = self._make_branchlayers2(self.branch2, 512, blocks_num[3], stride=2)
+
+
         if self.include_top:
             self.avgpool = nn.AdaptiveAvgPool2d((1, 1))  # output size = (1, 1)
             self.fc = nn.Linear(512 * block.expansion, num_classes)
+            self.fcb = nn.Linear(512 * block.expansion, int(num_classes/2))
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
 
     def _make_layer(self, block, channel, block_num, stride=1):
+
+
         downsample = None
         if stride != 1 or self.in_channel != channel * block.expansion:
             downsample = nn.Sequential(
@@ -142,6 +159,52 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
+    def _make_branchlayers1(self, block, channel, block_num, stride=1):
+        downsample = None
+        if stride != 1 or self.branch1_in_channel != channel * block.expansion:
+            downsample = nn.Sequential(
+                nn.Conv2d(self.branch1_in_channel, channel * block.expansion, kernel_size=1, stride=stride, bias=False),
+                nn.BatchNorm2d(channel * block.expansion))
+
+        layers = []
+        layers.append(block(self.branch1_in_channel,
+                            channel,
+                            downsample=downsample,
+                            stride=stride,
+                            groups=self.groups,
+                            width_per_group=self.width_per_group, ifbranch=True))
+        self.branch1_in_channel = channel * block.expansion
+
+        for _ in range(1, block_num):
+            layers.append(block(self.branch1_in_channel,
+                                channel,
+                                groups=self.groups,
+                                width_per_group=self.width_per_group))
+        return nn.Sequential(*layers)
+
+    def _make_branchlayers2(self, block, channel, block_num, stride=1):
+        downsample = None
+        if stride != 1 or self.branch2_in_channel != channel * block.expansion:
+            downsample = nn.Sequential(
+                nn.Conv2d(self.branch2_in_channel, channel * block.expansion, kernel_size=1, stride=stride, bias=False),
+                nn.BatchNorm2d(channel * block.expansion))
+
+        layers = []
+        layers.append(block(self.branch2_in_channel,
+                            channel,
+                            downsample=downsample,
+                            stride=stride,
+                            groups=self.groups,
+                            width_per_group=self.width_per_group, ifbranch=True))
+        self.branch2_in_channel = channel * block.expansion
+
+        for _ in range(1, block_num):
+            layers.append(block(self.branch2_in_channel,
+                                channel,
+                                groups=self.groups,
+                                width_per_group=self.width_per_group))
+        return nn.Sequential(*layers)
+
     def forward(self, x):
         x = self.conv1(x)
         #224*224 -> 112*112
@@ -154,15 +217,26 @@ class ResNet(nn.Module):
         # 56*56 -> 28*28
         x = self.layer3(x)
         # 28*28 -> 14*14
-        x = self.layer4(x)
+        x1, x2 = torch.split(x, 7, dim=2)
+        xg = self.layer4g(x)
+        x1 = self.layer41(x1)
+        x2 = self.layer42(x2)
         # 14*14 -> 7*7
         if self.include_top:
-            x = self.avgpool(x)
+            xg = self.avgpool(xg)
+            x1 = self.avgpool(x1)
+            x2 = self.avgpool(x2)
             #7*7->1*1
-            x = torch.flatten(x, 1)
-            x = self.fc(x)
+            xg = torch.flatten(xg, 1)
+            x1 = torch.flatten(x1, 1)
+            x2 = torch.flatten(x2, 1)
+            xg = self.fc(xg)
+            x1 = self.fcb(x1)
+            x2 = self.fcb(x2)
+            x_side = torch.cat([x1, x2], 1)
+            out = xg + x_side
 
-        return x
+        return out
 
 
 def resnet34(num_classes=1000, include_top=True):
@@ -170,7 +244,7 @@ def resnet34(num_classes=1000, include_top=True):
     return ResNet(BasicBlock, [3, 4, 6, 3], num_classes=num_classes, include_top=include_top)
 
 
-def resnet50(num_classes=1000, include_top=True):
+def resnet50_2branch(num_classes=1000, include_top=True):
     # https://download.pytorch.org/models/resnet50-19c8e357.pth
     return ResNet(Bottleneck, [3, 4, 6, 3], num_classes=num_classes, include_top=include_top)
 
@@ -202,7 +276,8 @@ def resnext101_32x8d(num_classes=1000, include_top=True):
                   width_per_group=width_per_group)
 
 if __name__ == "__main__":
-    model = resnet50(num_classes=128, include_top=True)
+    model = resnet50_2branch(num_classes=128, include_top=True)
     x = torch.zeros([2,3,224,224])
+
     out = model(x)
     print("test")

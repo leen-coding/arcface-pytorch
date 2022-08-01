@@ -16,6 +16,7 @@ from nets.mobilefacenet_cbam_v4 import get_mbf_cbam_v4
 from nets.Resnet_raw import resnet50
 from nets.mobilefacenet_two_branch_v3 import get_mbf_two_branch_v3
 from nets.mobilefacenet_two_branch_v6 import get_mbf_two_branch_v6
+from nets.Resnet_two_branch_v1 import resnet50_2branch
 class Arcface_Head(Module):
     def __init__(self, embedding_size=128, num_classes=10575, s=64., m=0.5):
         super(Arcface_Head, self).__init__()
@@ -52,7 +53,10 @@ class Arcface(nn.Module):
             embedding_size  = 128
             s               = 32
             self.arcface    = resnet50(num_classes= embedding_size, include_top=True)
-
+        elif backbone == "resnet50_2branch":
+            embedding_size  = 128
+            s               = 32
+            self.arcface    = resnet50_2branch(num_classes= embedding_size, include_top=True)
         elif backbone == "convNext":
             embedding_size = 512
             s = 64

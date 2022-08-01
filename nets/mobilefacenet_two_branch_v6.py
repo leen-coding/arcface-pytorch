@@ -240,7 +240,7 @@ class MobileFaceNet(Module):
         xg = self.after_feature_g(x)
         x_side = torch.cat([x1,x2,x3,x4],1)
         x = xg + x_side
-        return x
+        return xg
 
 
 def get_mbf_two_branch_v6(embedding_size, pretrained):
