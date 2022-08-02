@@ -23,15 +23,15 @@ if __name__ == "__main__":
     #   iresnet100
     #   iresnet200
     #--------------------------------------#
-    backbone        = "mobilefacenet_two_branch_v3"
+    backbone        = "resnet50"
     #--------------------------------------#
     #   输入图像大小
     #--------------------------------------#
-    input_shape     = [112, 112, 3]
+    input_shape     = [224, 224, 3]
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = "result/mobileface-web-two_branch_v3_bs128/ep049-loss6.742-val_loss8.252.pth"
+    model_path      = "result/resnet_web_bs128/ep029-loss13.946-val_loss13.868.pth"
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件

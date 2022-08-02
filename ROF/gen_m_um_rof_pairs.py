@@ -1,7 +1,7 @@
 import os
 import random
 
-PATH = "D:\\Files\\arcface-pytorch\\ROF\\combined"
+PATH = "D:\\Files\\dataset\\lfws\\lfw-factor-4"
 
 
 # rename code
@@ -24,7 +24,7 @@ def match_pairs():
         neutral_list = []
         occ_list = []
         for img_name in imgs_list:
-            if img_name.split("_")[0] == "neutral":
+            if not img_name.split("_")[-1] == "occ.jpg":
                 neutral_list.append(img_name)
             else:
                 occ_list.append(img_name)
@@ -51,7 +51,7 @@ def gen_unmatch_folder(idx, name_list):
     occ_list = []
     # print(name_list[rand_folder_num])
     for occ_img_name in occ_imgs_list:
-        if occ_img_name.split("_")[0] != "neutral":
+        if not occ_img_name.split("_")[-1] != "occ.jpg":
             occ_list.append(occ_img_name)
     return occ_list,str(name_list[rand_folder_num])
 
@@ -64,7 +64,7 @@ def unmatch_pairs():
         folder_path = os.path.join(PATH, name)
         imgs_list = os.listdir(folder_path)
         for img_name in imgs_list:
-            if img_name.split("_")[0] == "neutral":
+            if not img_name.split("_")[-1] == "occ.jpg":
                 neutral_list.append(img_name)
         if len(neutral_list) == 0:
             continue
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     unmatchpairs = unmatch_pairs()
     combined_list = matchpairs + unmatchpairs
     random.shuffle(combined_list)
-    f = open("D:\\Files\\arcface-pytorch\\ROF\\ROFCombine_m_un_pairs_clean.txt", "w")
+    f = open("D:\\Files\\dataset\\lfws\\lfwbb4.txt", "w")
     for i in combined_list:
         f.write(str(i).replace('[', '').replace(']', '').replace(',', '').replace('\'', '').replace('\'', '') + "\n")
     f.close()

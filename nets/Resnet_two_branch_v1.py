@@ -49,8 +49,14 @@ class Bottleneck(nn.Module):
         super(Bottleneck, self).__init__()
         self.ifbranch = ifbranch
         self.ifbranchnext = ifbranchnext
+        padding = 1
+
         if self.ifbranch:
             kernelsize = (3, 10)
+
+        elif self.ifbranchnext:
+            kernelsize = (1, 1)
+            padding = 1
 
         else:
             kernelsize = (3, 3)
@@ -61,7 +67,7 @@ class Bottleneck(nn.Module):
         self.bn1 = nn.BatchNorm2d(width)
         # -----------------------------------------
         self.conv2 = nn.Conv2d(in_channels=width, out_channels=width, groups=groups,
-                               kernel_size=kernelsize, stride=stride, bias=False, padding=1)
+                               kernel_size=kernelsize, stride=stride, bias=False, padding=padding)
         self.bn2 = nn.BatchNorm2d(width)
         # -----------------------------------------
         self.conv3 = nn.Conv2d(in_channels=width, out_channels=out_channel*self.expansion,
@@ -85,7 +91,7 @@ class Bottleneck(nn.Module):
 
         out = self.conv3(out)
         out = self.bn3(out)
-        if not self.ifbranch:
+        if not self.ifbranch and not self.ifbranchnext:
             out += identity
         out = self.relu(out)
 
@@ -179,7 +185,7 @@ class ResNet(nn.Module):
             layers.append(block(self.branch1_in_channel,
                                 channel,
                                 groups=self.groups,
-                                width_per_group=self.width_per_group))
+                                width_per_group=self.width_per_group,ifbranchnext=True))
         return nn.Sequential(*layers)
 
     def _make_branchlayers2(self, block, channel, block_num, stride=1):
