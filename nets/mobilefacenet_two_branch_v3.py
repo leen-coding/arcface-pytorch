@@ -12,6 +12,7 @@ class ChannelAttention(nn.Module):
                                 nn.ReLU(),
                                 nn.Conv2d(in_planes // ratio, in_planes, 1, bias=True))
         self.sigmoid = nn.PReLU()
+        # nn.PReLU()
 
     def forward(self, x):
         avg_out = self.fc(self.avg_pool(x))

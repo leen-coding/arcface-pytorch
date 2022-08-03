@@ -49,6 +49,12 @@ class Arcface(nn.Module):
             embedding_size  = 128
             s               = 32
             self.arcface    = get_mbf(embedding_size=embedding_size, pretrained=pretrained)
+
+        elif backbone == "mobilenetv1":
+            embedding_size = 512
+            s = 64
+            self.arcface = get_mobilenet(dropout_keep_prob=0.5, embedding_size=embedding_size, pretrained=pretrained)
+
         elif backbone == "resnet50":
             embedding_size  = 128
             s               = 32

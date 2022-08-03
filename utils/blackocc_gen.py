@@ -22,7 +22,7 @@ def gen_occ(PATH,ratio = 0.2):
     # plt.show()
     new_image.save(new_path)
 
-PATH = "D:\\Files\\dataset\\lfws\\lfw-factor-4"
+PATH = "D:\\Files\\dataset\\lfws\\lfw-factor-8"
 
 folder_list = os.listdir(PATH)
 
@@ -30,4 +30,4 @@ for path in folder_list:
     img_list = os.listdir(os.path.join(PATH, path))
     for img in img_list:
         img_path = os.path.join(PATH,path,img)
-        gen_occ(img_path, 0.4)
+        gen_occ(img_path, 0.8)

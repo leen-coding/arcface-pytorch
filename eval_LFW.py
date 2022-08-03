@@ -31,31 +31,65 @@ if __name__ == "__main__":
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = "result/resnet_web_bs128/ep029-loss13.946-val_loss13.868.pth"
+    model_path      = "result/mobileface-web-7_branch_cbam_v6/ep050-loss5.979-val_loss7.548.pth"
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
     #--------------------------------------#
-    testsets = ["rof","mfr2","mlfw","lfw"]
-    for testset in testsets:
-    # testset = "mlfw"
-        if testset == "rof":
-            lfw_dir_path    = "ROF/combined"
-            lfw_pairs_path  = "ROF/ROFCombine_m_un_pairs_clean.txt"
-        elif testset == "mfr2":
-            lfw_dir_path    = "mfr2"
-            lfw_pairs_path  = "mfr2_pairs.txt"
-        elif testset == "mlfw":
-            lfw_dir_path    = "mlfw_dataset/mlfw_aligned_dir"
-            lfw_pairs_path  = "mlfw_dataset/mlfw_pairs.txt"
-        elif testset == "lfw":
-            lfw_dir_path    = "lfw"
-            lfw_pairs_path  = "model_data/lfw_pairs_test.txt"
+    # blocktest = ["g-g","m-m","n-g","n-m"]
+    # for testset in blocktest:
+    #
+    #     if testset == "g-g":
+    #         lfw_dir_path    = "ROF/sunglasses"
+    #         lfw_pairs_path  = "ROF/glasses_pairs.txt"
+    #     elif testset == "m-m":
+    #         lfw_dir_path    = "ROF/masked"
+    #         lfw_pairs_path  = "ROF/mask_pairs.txt"
+    #     elif testset == "n-g":
+    #         lfw_dir_path    = "ROF/combined"
+    #         lfw_pairs_path  = "ROF/n-g.txt"
+    #     elif testset == "n-m":
+    #         lfw_dir_path    = "ROF/combined"
+    #         lfw_pairs_path  = "ROF/n-m.txt"
+    #     else:
+    #         raise ValueError
+    blocktest = ["lfw.2","lfw.4","lfw.6","lfw.8"]
+    for testset in blocktest:
+
+        if testset == "lfw.2":
+            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-2"
+            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb2.txt"
+        elif testset == "lfw.4":
+            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-4"
+            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb4.txt"
+        elif testset == "lfw.6":
+            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-6"
+            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb6.txt"
+        elif testset == "lfw.8":
+            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-8"
+            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb8.txt"
         else:
             raise ValueError
-        #--------------------------------------#
-        #   评估的批次大小和记录间隔
-        #--------------------------------------#
+    # testsets = ["rof","mfr2","mlfw","lfw"]
+    # for testset in testsets:
+    # # testset = "mlfw"
+    #     if testset == "rof":
+    #         lfw_dir_path    = "ROF/combined"
+    #         lfw_pairs_path  = "ROF/ROFCombine_m_un_pairs_clean.txt"
+    #     elif testset == "mfr2":
+    #         lfw_dir_path    = "mfr2"
+    #         lfw_pairs_path  = "mfr2_pairs.txt"
+    #     elif testset == "mlfw":
+    #         lfw_dir_path    = "mlfw_dataset/mlfw_aligned_dir"
+    #         lfw_pairs_path  = "mlfw_dataset/mlfw_pairs.txt"
+    #     elif testset == "lfw":
+    #         lfw_dir_path    = "lfw"
+    #         lfw_pairs_path  = "model_data/lfw_pairs_test.txt"
+    #     else:
+    #         raise ValueError
+    #--------------------------------------#
+    #   评估的批次大小和记录间隔
+    #--------------------------------------#
         batch_size      = 64
         log_interval    = 1
         #--------------------------------------#

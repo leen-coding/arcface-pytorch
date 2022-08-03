@@ -1,7 +1,7 @@
 import os
 import random
 
-PATH = "D:\\Files\\dataset\\lfws\\lfw-factor-4"
+PATH = "D:\\Files\\arcface-pytorch\\ROF\\combined"
 
 
 # rename code
@@ -24,10 +24,12 @@ def match_pairs():
         neutral_list = []
         occ_list = []
         for img_name in imgs_list:
-            if not img_name.split("_")[-1] == "occ.jpg":
+            if  img_name.split("_")[0] == "neutral":
                 neutral_list.append(img_name)
-            else:
+            elif img_name.split("_")[0] == "masked":
                 occ_list.append(img_name)
+            else:
+                continue
 
         if len(occ_list) == 0:
             continue
@@ -51,9 +53,9 @@ def gen_unmatch_folder(idx, name_list):
     occ_list = []
     # print(name_list[rand_folder_num])
     for occ_img_name in occ_imgs_list:
-        if not occ_img_name.split("_")[-1] != "occ.jpg":
+        if occ_img_name.split("_")[0] == "masked":
             occ_list.append(occ_img_name)
-    return occ_list,str(name_list[rand_folder_num])
+    return occ_list, str(name_list[rand_folder_num])
 
 def unmatch_pairs():
     name_list = os.listdir(PATH)
@@ -64,7 +66,7 @@ def unmatch_pairs():
         folder_path = os.path.join(PATH, name)
         imgs_list = os.listdir(folder_path)
         for img_name in imgs_list:
-            if not img_name.split("_")[-1] == "occ.jpg":
+            if img_name.split("_")[0] == "neutral":
                 neutral_list.append(img_name)
         if len(neutral_list) == 0:
             continue
@@ -91,7 +93,7 @@ if __name__ == "__main__":
     unmatchpairs = unmatch_pairs()
     combined_list = matchpairs + unmatchpairs
     random.shuffle(combined_list)
-    f = open("D:\\Files\\dataset\\lfws\\lfwbb4.txt", "w")
+    f = open("D:\\Files\\arcface-pytorch\\ROF\\n-m.txt", "w")
     for i in combined_list:
         f.write(str(i).replace('[', '').replace(']', '').replace(',', '').replace('\'', '').replace('\'', '') + "\n")
     f.close()
