@@ -68,7 +68,7 @@ if __name__ == "__main__":
     backbone1 = "mobilefacenet"
     model_path1 = "result/mobileface-web1o2/ep050-loss7.186-val_loss8.717.pth"
     backbone2 = "mobilefacenet_two_branch_v3"
-    model_path2 = "result/mobileface-web1o2-two_branch_v3/ep032-loss6.853-val_loss8.570.pth"
+    model_path2 = "result/mobileface-web-2branch_cbam_v3_bs64_set_epoch_200/ep045-loss6.722-val_loss7.547.pth"
 
 
     # mobilefacenet_two_branch_v6
@@ -85,8 +85,8 @@ if __name__ == "__main__":
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
     # --------------------------------------#
-    lfw_dir_path = "ROF/combined"
-    lfw_pairs_path = "ROF/ROFCombine_m_un_pairs_clean.txt"
+    lfw_dir_path    = "ROF/combined"
+    lfw_pairs_path  = "ROF/ROFCombine_m_un_pairs_clean.txt"
     # --------------------------------------#
     #   评估的批次大小和记录间隔
     # --------------------------------------#
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     model1.load_state_dict(torch.load(model_path1, map_location=device), strict=False)
     model = model1.eval()
     # model1.arcface.sep
-    target_layers1 = [model1.arcface.sep]
+    target_layers1 = [model1.arcface.conv_5]
     # model1.arcface.stages[3]
     model2 = Arcface(backbone=backbone2, mode="predict")
     model2.load_state_dict(torch.load(model_path2, map_location=device), strict=False)

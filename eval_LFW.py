@@ -23,15 +23,15 @@ if __name__ == "__main__":
     #   iresnet100
     #   iresnet200
     #--------------------------------------#
-    backbone        = "resnet50"
+    backbone        = "mobilefacenet_two_branch_v3"
     #--------------------------------------#
     #   输入图像大小
     #--------------------------------------#
-    input_shape     = [224, 224, 3]
+    input_shape     = [112, 112, 3]
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = "result/mobileface-web-7_branch_cbam_v6/ep050-loss5.979-val_loss7.548.pth"
+    model_path      = "result/mobileface-web1o2-two_branch_v3/ep049-loss6.739-val_loss8.510.pth"
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
@@ -53,23 +53,42 @@ if __name__ == "__main__":
     #         lfw_pairs_path  = "ROF/n-m.txt"
     #     else:
     #         raise ValueError
-    blocktest = ["lfw.2","lfw.4","lfw.6","lfw.8"]
+
+    blocktest = ["lfw.3","lfw.5","lfw.7","lfw.9"]
     for testset in blocktest:
 
-        if testset == "lfw.2":
-            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-2"
-            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb2.txt"
-        elif testset == "lfw.4":
-            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-4"
-            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb4.txt"
-        elif testset == "lfw.6":
-            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-6"
-            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb6.txt"
-        elif testset == "lfw.8":
-            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-8"
-            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb8.txt"
+        if testset == "lfw.3":
+            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-3"
+            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb3.txt"
+        elif testset == "lfw.5":
+            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-5"
+            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb5.txt"
+        elif testset == "lfw.7":
+            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-7"
+            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb7.txt"
+        elif testset == "lfw.9":
+            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-9"
+            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb9.txt"
         else:
             raise ValueError
+
+    # blocktest = ["lfw.2","lfw.4","lfw.6","lfw.8"]
+    # for testset in blocktest:
+    #
+    #     if testset == "lfw.2":
+    #         lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-2"
+    #         lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb2.txt"
+    #     elif testset == "lfw.4":
+    #         lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-4"
+    #         lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb4.txt"
+    #     elif testset == "lfw.6":
+    #         lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-6"
+    #         lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb6.txt"
+    #     elif testset == "lfw.8":
+    #         lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-8"
+    #         lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb8.txt"
+    #     else:
+    #         raise ValueError
     # testsets = ["rof","mfr2","mlfw","lfw"]
     # for testset in testsets:
     # # testset = "mlfw"

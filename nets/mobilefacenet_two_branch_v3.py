@@ -156,11 +156,11 @@ class MobileFaceNet(Module):
         # 28,28,64 -> 14,14,128
         self.conv_34    = Residual_Block(64, 128, kernel=(3, 3), stride=(2, 2), padding=(1, 1), groups=256)
         self.conv_4     = Residual(128, num_block=6, groups=256, kernel=(3, 3), stride=(1, 1), padding=(1, 1))
-
+        self.stage1 = nn.Sequential(self.conv1, self.conv2_dw, self.conv_23, self.conv_3, self.conv_34, self.conv_4)
         self.after_feature_up = after_feature(embedding_size=64, kernel_size=(4,7))
         self.after_feature_down = after_feature(embedding_size=64, kernel_size=(4, 7))
         self.after_feature_g = after_feature(embedding_size=128, kernel_size=(7,7),ifcbam=True)
-        self.stage1 = nn.Sequential(self.conv1, self.conv2_dw, self.conv_23, self.conv_3, self.conv_34, self.conv_4)
+
         self._initialize_weights()
 
 
@@ -188,6 +188,7 @@ class MobileFaceNet(Module):
         xg = self.after_feature_g(x)
         x_side = torch.cat([x1,x2],1)
         x = xg + x_side
+
         return x
 
 
