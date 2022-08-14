@@ -23,7 +23,7 @@ if __name__ == "__main__":
     #   iresnet100
     #   iresnet200
     #--------------------------------------#
-    backbone        = "mobilefacenet_two_branch_v3"
+    backbone        = "mobilefacenet"
     #--------------------------------------#
     #   输入图像大小
     #--------------------------------------#
@@ -31,46 +31,46 @@ if __name__ == "__main__":
     #--------------------------------------#
     #   训练好的权值文件
     #--------------------------------------#
-    model_path      = "result/mobileface-web1o2-two_branch_v3/ep049-loss6.739-val_loss8.510.pth"
+    model_path      = "model_data/arcface_mobilefacenet.pth"
     #--------------------------------------#
     #   LFW评估数据集的文件路径
     #   以及对应的txt文件
     #--------------------------------------#
-    # blocktest = ["g-g","m-m","n-g","n-m"]
-    # for testset in blocktest:
-    #
-    #     if testset == "g-g":
-    #         lfw_dir_path    = "ROF/sunglasses"
-    #         lfw_pairs_path  = "ROF/glasses_pairs.txt"
-    #     elif testset == "m-m":
-    #         lfw_dir_path    = "ROF/masked"
-    #         lfw_pairs_path  = "ROF/mask_pairs.txt"
-    #     elif testset == "n-g":
-    #         lfw_dir_path    = "ROF/combined"
-    #         lfw_pairs_path  = "ROF/n-g.txt"
-    #     elif testset == "n-m":
-    #         lfw_dir_path    = "ROF/combined"
-    #         lfw_pairs_path  = "ROF/n-m.txt"
-    #     else:
-    #         raise ValueError
-
-    blocktest = ["lfw.3","lfw.5","lfw.7","lfw.9"]
+    blocktest = ["g-g","m-m","n-g","n-m"]
     for testset in blocktest:
 
-        if testset == "lfw.3":
-            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-3"
-            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb3.txt"
-        elif testset == "lfw.5":
-            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-5"
-            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb5.txt"
-        elif testset == "lfw.7":
-            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-7"
-            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb7.txt"
-        elif testset == "lfw.9":
-            lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-9"
-            lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb9.txt"
+        if testset == "g-g":
+            lfw_dir_path    = "ROF/sunglasses"
+            lfw_pairs_path  = "ROF/glasses_pairs.txt"
+        elif testset == "m-m":
+            lfw_dir_path    = "ROF/masked"
+            lfw_pairs_path  = "ROF/mask_pairs.txt"
+        elif testset == "n-g":
+            lfw_dir_path    = "ROF/combined"
+            lfw_pairs_path  = "ROF/n-g.txt"
+        elif testset == "n-m":
+            lfw_dir_path    = "ROF/combined"
+            lfw_pairs_path  = "ROF/n-m.txt"
         else:
             raise ValueError
+
+    # blocktest = ["lfw.3","lfw.5","lfw.7","lfw.9"]
+    # for testset in blocktest:
+    #
+    #     if testset == "lfw.3":
+    #         lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-3"
+    #         lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb3.txt"
+    #     elif testset == "lfw.5":
+    #         lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-5"
+    #         lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb5.txt"
+    #     elif testset == "lfw.7":
+    #         lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-7"
+    #         lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb7.txt"
+    #     elif testset == "lfw.9":
+    #         lfw_dir_path    = "D:\\Files\\dataset\\lfws\\lfw-factor-9"
+    #         lfw_pairs_path  = "D:\\Files\\dataset\\lfws\\lfwbb9.txt"
+    #     else:
+    #         raise ValueError
 
     # blocktest = ["lfw.2","lfw.4","lfw.6","lfw.8"]
     # for testset in blocktest:
@@ -114,7 +114,7 @@ if __name__ == "__main__":
         #--------------------------------------#
         #   ROC图的保存路径
         #--------------------------------------#
-        png_save_path   = "model_data/roc_test.png"
+        png_save_path   = "model_data/baseline_roc_test{}.png".format(testset)
 
         test_loader = torch.utils.data.DataLoader(
             TestDataset(dir=lfw_dir_path, pairs_path=lfw_pairs_path, image_size=input_shape), batch_size=batch_size, shuffle=False, drop_last=False)
